@@ -34,6 +34,13 @@ import (
 	"github.com/lightninglabs/neutrino/query"
 )
 
+// SFNodeBlake2b is the service bit BLAKE2b nodes advertise: the node enforces
+// the BLAKE2b hardfork rules. Bitcoin Knots 29.4.3 sends headers, blocks and
+// block announcements above the last block the two chains share (961631 on
+// mainnet) only to peers that advertise it, so a client that leaves it out
+// never syncs past the fork.
+const SFNodeBlake2b wire.ServiceFlag = 1 << 28
+
 // These are exported variables so they can be changed by users.
 //
 // TODO: Export functional options for these as much as possible so they can be
@@ -51,13 +58,6 @@ var (
 	// UserAgentVersion is the user agent version and is used to help
 	// identify ourselves to other bitcoin peers.
 	UserAgentVersion = "0.17.1"
-
-	// SFNodeBlake2b is the service bit BLAKE2b nodes advertise: the
-	// node enforces the BLAKE2b hardfork rules. Bitcoin Knots 29.4.3
-	// only shares headers, blocks and filters past the fork height
-	// with peers that advertise it, so a client that leaves it out
-	// never syncs past the fork.
-	SFNodeBlake2b = wire.ServiceFlag(1 << 28)
 
 	// Services describes the services that are supported by the
 	// server. We validate BLAKE2b headers, so we advertise

@@ -2440,10 +2440,14 @@ func (b *blockManager) handleHeadersMsg(hmsg *headersMsg) {
 
 	// An empty headers message has nothing to add. From the sync peer,
 	// when that peer says it is ahead of our tip, it means the peer won't
-	// serve the headers we asked for (Bitcoin Core and Knots answer so
-	// while they consider themselves in initial block download). Nothing
-	// else would pick another sync peer, so the sync would wait on it for
-	// good: disconnect it and sync from another.
+	// serve the headers we asked for: Bitcoin Core and Knots answer so
+	// while their chain has less than the minimum chain work, and Knots
+	// from 29.4.3 answers so above the last block the two chains share
+	// (961631 on mainnet) to a peer that does not advertise
+	// SFNodeBlake2b. (While importing or reindexing they send nothing,
+	// which this does not cover.) Nothing else would pick another sync
+	// peer, so the sync would wait on it for good: disconnect it and sync
+	// from another.
 	if numHeaders == 0 {
 		if hmsg.peer == b.SyncPeer() && !b.BlockHeadersSynced() {
 			_, tipHeight, err := b.cfg.BlockHeaders.ChainTip()
